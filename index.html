@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable-no">
     <title>Oichi</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=MochiyPopOne&display=swap" rel="stylesheet">
@@ -13,16 +13,7 @@
             background-color: #fde6e8; /* 背景色をピンク系に変更 */
         }
         #loading {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background-color: rgba(255, 255, 255, 0.8);
-            z-index: 1000;
+            display: none; /* ローディング画面を非表示にする */
         }
         .container {
             max-width: 100%;
@@ -115,7 +106,7 @@
     </style>
 </head>
 <body class="bg-gray-100">
-    <div id="loading">
+    <div id="loading" class="hidden">
         <i class="fas fa-spinner fa-spin fa-3x text-gray-600"></i>
     </div>
     <div class="container mx-auto">
@@ -131,10 +122,8 @@
         </div>
         <p id="no-dinner" class="hidden">今日の夕ご飯はありません。</p>
     </div>
-
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyDLkHGBQ_fq5CTPQI7qgeadg7sD9i9aiEk9BITlZzk19e1rYtqr-HRuiw4kbBQFrEm/exec";
-        const loadingScreen = document.getElementById("loading");
         const dinnerCard = document.getElementById("dinner-card");
         const dinnerImage = document.getElementById("dinner-image");
         const dinnerName = document.getElementById("dinner-name");
@@ -143,19 +132,17 @@
         const noDinnerMessage = document.getElementById("no-dinner");
 
         function getDinner() {
-            loadingScreen.classList.remove("hidden");
             dinnerCard.classList.add("hidden");
             noDinnerMessage.classList.add("hidden");
             fetch(SCRIPT_URL)
                 .then(response => response.json())
                 .then(data => {
-                    loadingScreen.classList.add("hidden");
                     if (data && data.length > 0) {
                         const randomIndex = Math.floor(Math.random() * data.length);
                         const dinner = data[randomIndex];
                         dinnerImage.src = dinner.image;
                         dinnerName.textContent = dinner.name;
-                        dinnerTagsContainer.innerHTML = ""; // Clear previous tags
+                        dinnerTagsContainer.innerHTML = "";
                         dinner.tags.forEach(tag => {
                             const tagElement = document.createElement("span");
                             tagElement.className = "tag";
@@ -168,7 +155,6 @@
                     }
                 })
                 .catch(error => {
-                    loadingScreen.classList.add("hidden");
                     console.error("Error fetching dinner:", error);
                     alert("夕ご飯の取得に失敗しました。時間を置いて再度試してください。");
                 });
