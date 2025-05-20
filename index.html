@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Oichi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=MochiyPopOne&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" xintegrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            font-family: 'Mochiy Pop One', sans-serif; /* フォントを変更 */
+            background-color: #fde6e8; /* 背景色をピンク系に変更 */
+        }
+        #loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            z-index: 1000;
+        }
+        .container {
+            max-width: 100%;
+            padding-left: 16px;
+            padding-right: 16px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        #dinner-card {
+            background-color: #fffafa; /* カードの背景色を薄いピンクに変更 */
+            border-radius: 16px; /* 角丸を大きくする */
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); /* 影を大きくする */
+            margin-bottom: 24px;
+            border: 2px solid #fbcfe8; /* 枠線を追加 */
+            position: relative; /* 相対位置指定を追加 */
+            overflow: hidden;
+        }
+        #dinner-image {
+            width: 100%;
+            height: auto;
+            border-top-left-radius: 16px; /* 角丸を大きくする */
+            border-top-right-radius: 16px; /* 角丸を大きくする */
+            object-fit: cover;
+            aspect-ratio: 16/9;
+        }
+        #dinner-info {
+            padding: 16px; /* パディングを調整 */
+            position: absolute; /* 絶対位置指定を追加 */
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.7)); /* グラデーション背景 */
+            z-index: 2;
+        }
+        #dinner-name {
+            font-size: 24px; /* 文字サイズを大きくする */
+            font-weight: bold;
+            margin-bottom: 0; /* マージンを削除 */
+            color: white; /* 文字色を白に変更 */
+            padding: 8px;
+        }
+        #dinner-tags {
+            display: none; /* タグの表示を削除 */
+        }
+        .tag {
+            background-color: #fcd5ce; /* タグの背景色をピンク系に変更 */
+            padding: 8px 16px; /* パディングを大きくする */
+            border-radius: 16px; /* 角丸を大きくする */
+            font-size: 16px; /* 文字サイズを大きくする */
+            color: #ff8ba7; /* 文字色を濃いピンクに変更 */
+            border: 1px solid #fbcfe8; /* 枠線を追加 */
+        }
+        #refresh-button {
+            background-color: #ffb6c1; /* ボタンの背景色を薄いピンクに変更 */
+            color: white;
+            padding: 16px 32px; /* パディングを大きくする */
+            border-radius: 16px; /* 角丸を大きくする */
+            font-size: 20px; /* 文字サイズを大きくする */
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100%; /* ボタンの幅を調整 */
+            margin: 24px auto 0; /* 下マージンを調整、中央揃えにする */
+            display: block;
+            border: none; /* 枠線をなくす */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 影を追加 */
+            z-index: 3; /* 画像より前面に表示 */
+            opacity: 0.9;
+            position: relative;
+            top: 0;
+            left: 0;
+            transform: none;
+            margin-bottom: 16px; /* ボタンの下にマージンを追加 */
+        }
+        #refresh-button:hover {
+            background-color: #ff8eb3; /* ホバー時の背景色を濃いピンクに変更 */
+            opacity: 1;
+        }
+        #no-dinner {
+            text-align: center;
+            color: #ff8eb3; /* 文字色を濃いピンクに変更 */
+            font-size: 18px;
+            margin-top: 24px;
+        }
+        h1 {
+            font-size: 36px; /* 見出しの文字サイズを大きくする */
+            color: #ff79c6; /* 文字色を濃いピンクに変更 */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2); /* テキストに影を追加 */
+            margin-bottom: 24px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div id="loading">
+        <i class="fas fa-spinner fa-spin fa-3x text-gray-600"></i>
+    </div>
+    <div class="container mx-auto">
+        <h1 class="text-2xl font-bold text-center mt-8 mb-8 text-gray-800">Oichi</h1>
+        <button id="refresh-button" class="mt-4">ちがうの</button>
+        <div id="dinner-card" class="hidden">
+            <img id="dinner-image" src="" alt="夕ご飯の画像">
+            <div id="dinner-info">
+                <h2 id="dinner-name" class="text-xl font-semibold text-gray-800" style="top: 0; left: 0;"></h2>
+                <div id="dinner-tags">
+                    </div>
+            </div>
+        </div>
+        <p id="no-dinner" class="hidden">今日の夕ご飯はありません。</p>
+    </div>
+
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyDLkHGBQ_fq5CTPQI7qgeadg7sD9i9aiEk9BITlZzk19e1rYtqr-HRuiw4kbBQFrEm/exec";
+        const loadingScreen = document.getElementById("loading");
+        const dinnerCard = document.getElementById("dinner-card");
+        const dinnerImage = document.getElementById("dinner-image");
+        const dinnerName = document.getElementById("dinner-name");
+        const dinnerTagsContainer = document.getElementById("dinner-tags");
+        const refreshButton = document.getElementById("refresh-button");
+        const noDinnerMessage = document.getElementById("no-dinner");
+
+        function getDinner() {
+            loadingScreen.classList.remove("hidden");
+            dinnerCard.classList.add("hidden");
+            noDinnerMessage.classList.add("hidden");
+            fetch(SCRIPT_URL)
+                .then(response => response.json())
+                .then(data => {
+                    loadingScreen.classList.add("hidden");
+                    if (data && data.length > 0) {
+                        const randomIndex = Math.floor(Math.random() * data.length);
+                        const dinner = data[randomIndex];
+                        dinnerImage.src = dinner.image;
+                        dinnerName.textContent = dinner.name;
+                        dinnerTagsContainer.innerHTML = ""; // Clear previous tags
+                        dinner.tags.forEach(tag => {
+                            const tagElement = document.createElement("span");
+                            tagElement.className = "tag";
+                            tagElement.textContent = tag;
+                            dinnerTagsContainer.appendChild(tagElement);
+                        });
+                        dinnerCard.classList.remove("hidden");
+                    } else {
+                        noDinnerMessage.classList.remove("hidden");
+                    }
+                })
+                .catch(error => {
+                    loadingScreen.classList.add("hidden");
+                    console.error("Error fetching dinner:", error);
+                    alert("夕ご飯の取得に失敗しました。時間を置いて再度試してください。");
+                });
+        }
+
+        refreshButton.addEventListener("click", getDinner);
+
+        // 初回読み込み時にも実行
+        getDinner();
+    </script>
+</body>
+</html>
